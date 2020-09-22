@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <h3>Account Balance: {{ cash }}</h3>
+    <hr>
+    <table class="display" id="table" style="width:100%">
+        <thead><h4>Your Trade History</h4>
+            <tr>
+                <th>Trade</th>
+                <th>Shares</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>UTC</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in history %}
+            <tr>
+                {% for value in row %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+{% endblock %}

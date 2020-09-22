@@ -1,0 +1,82 @@
+import os
+import requests
+import urllib.parse
+
+from flask import redirect, render_template, request, session
+from functools import wraps
+
+
+def apology(message, code=400):
+    """Render message as an apology to user."""
+    def escape(s):
+        """
+        Escape special characters.
+
+        https://github.com/jacebrowning/memegen#special-characters
+        """
+        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
+                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
+            s = s.replace(old, new)
+        return s
+    return render_template("apology.html", top=code, bottom=escape(message)), code
+
+
+def login_required(f):
+    """
+    Decorate routes to require login.
+
+    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def lookup(symbol):
+    """Look up quote for symbol."""
+
+    # Contact API
+    try:
+        api_key = os.environ.get(API_KEY)
+        response = requests.get(
+            f"https://sandbox.iexapis.com/stable/stock/{symbol}/quote?token=" + api_key)
+        response.raise_for_status()
+    except requests.RequestException:
+        return {}
+
+    # Parse response
+    try:
+        quote = response.json()
+        return {
+            "symbol": quote["symbol"],
+            "name": quote["companyName"],
+            "price": float(quote["latestPrice"]),
+            "time": quote["latestTime"]
+        }
+    except (KeyError, TypeError, ValueError):
+        return {}
+
+
+def usd(value):
+    """Format value as USD."""
+    return f"${value:,.2f}"
+
+# define User object
+
+
+class User():
+
+    def __init__(self, rows):
+        self.rows = rows
+
+    def balance(self):
+        return self.rows[0]["cash"]
+
+    def dollars(self):
+        return usd(self.rows[0]["cash"])
+
+    def update(self, cost):
+        self.rows[0]["cash"] -= cost

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <h3>Account Balance: {{ cash }}</h3>
+    <hr>
+    <table class="display" id="table" style="width:100%">
+        <thead><h4>Your Portfolio</h4>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Holding</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for holding in folio %}
+            <tr>
+                {% for value in holding %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+    <hr>
+    <h3>Total Value of Assets: {{ assets }}</h3>
+{% endblock %}

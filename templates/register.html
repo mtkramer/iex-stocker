@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    New User
+{% endblock %}
+
+{% block main %}
+    <form action="/register" method="post" class="needs-validation" novalidate>
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <input class="form-control" name="username" id="username" type="text" placeholder="Username" autocomplete="off" autofocus required>
+                    <div class="invalid-feedback">Please enter username</div>
+                    <div id="taken"></div>
+                </div>
+                <div class="col">
+                    <input class="form-control" name="password" type="password" placeholder="Password" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please enter password</div>
+                </div>
+                <div class="col">
+                    <input class="form-control" name="confirmation" type="password" placeholder="Retype Password" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please retype your password</div>
+                </div>
+            </div>
+            <p></p>
+            <button class="btn btn-primary" type="submit">Create Account</button>
+        </div>
+    </form>
+    <script>
+        var username = document.getElementById("username");
+        var taken = document.getElementById("taken");
+        function check(e) {
+            if (e.target.value === "") {
+                taken.innerHTML = "";
+                event.preventDefault();
+            } else {
+                $.get("/check", {username: e.target.value}, function(data){
+                    if (data == "false") {
+                        taken.style.color = "#dc3545";
+                        taken.innerHTML = "Sorry, but that username is taken";
+                        event.preventDefault();
+                    }
+                    else {
+                        taken.style.color = "#28a745";
+                        taken.innerHTML = "Looks good!";
+                    }
+                });
+            }
+        }
+        username.addEventListener('input', check);
+    </script>
+{% endblock %}
